@@ -47,5 +47,9 @@
     "sauceconnect": "tests/sauceconnect.js"
   },
   "homepage": "http://html2canvas.hertzen.com",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "bowser": "^1.0.0",
+    "canvg-browser": "^1.0.0"
+  }
 }

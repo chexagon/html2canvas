@@ -20,6 +20,10 @@ function html2canvas(nodeList, options) {
         log.options.start = Date.now();
     }
 
+    if (!options.scale) options.scale = window.devicePixelratio;
+		if (options.width) options.width *= options.scale;
+		if (options.height) options.height *= options.scale;
+
     options.async = typeof(options.async) === "undefined" ? true : options.async;
     options.allowTaint = typeof(options.allowTaint) === "undefined" ? false : options.allowTaint;
     options.removeContainer = typeof(options.removeContainer) === "undefined" ? true : options.removeContainer;
@@ -89,18 +93,18 @@ function renderWindow(node, container, options, windowWidth, windowHeight) {
     var bounds = getBounds(node);
     var width = options.type === "view" ? windowWidth : documentWidth(clonedWindow.document);
     var height = options.type === "view" ? windowHeight : documentHeight(clonedWindow.document);
-    var renderer = new options.renderer(width, height, imageLoader, options, document);
+    var renderer = new options.renderer(width*options.scale, height*options.scale, imageLoader, options, document);
     var parser = new NodeParser(node, renderer, support, imageLoader, options);
     return parser.ready.then(function() {
         log("Finished rendering");
         var canvas;
 
         if (options.type === "view") {
-            canvas = crop(renderer.canvas, {width: renderer.canvas.width, height: renderer.canvas.height, top: 0, left: 0, x: 0, y: 0});
+            canvas = crop(renderer.canvas, {width: renderer.canvas.width, height: renderer.canvas.height, top: 0, left: 0, x: 0, y: 0}, options.scale);
         } else if (node === clonedWindow.document.body || node === clonedWindow.document.documentElement || options.canvas != null) {
             canvas = renderer.canvas;
         } else {
-            canvas = crop(renderer.canvas, {width:  options.width != null ? options.width : bounds.width, height: options.height != null ? options.height : bounds.height, top: bounds.top, left: bounds.left, x: 0, y: 0});
+            canvas = crop(renderer.canvas, {width:  options.width != null ? options.width : bounds.width, height: options.height != null ? options.height : bounds.height, top: bounds.top, left: bounds.left, x: 0, y: 0}, options.scale);
         }
 
         cleanupContainer(container, options);
@@ -115,12 +119,12 @@ function cleanupContainer(container, options) {
     }
 }
 
-function crop(canvas, bounds) {
+function crop(canvas, bounds, scaleFactor) {
     var croppedCanvas = document.createElement("canvas");
-    var x1 = Math.min(canvas.width - 1, Math.max(0, bounds.left));
-    var x2 = Math.min(canvas.width, Math.max(1, bounds.left + bounds.width));
-    var y1 = Math.min(canvas.height - 1, Math.max(0, bounds.top));
-    var y2 = Math.min(canvas.height, Math.max(1, bounds.top + bounds.height));
+    var x1 = Math.min(canvas.width * scaleFactor - 1, Math.max(0, bounds.left) * scaleFactor );
+    var x2 = Math.min(canvas.width * scaleFactor, Math.max(1, bounds.left + bounds.width) * scaleFactor);
+    var y1 = Math.min(canvas.height * scaleFactor - 1, Math.max(0, bounds.top) * scaleFactor);
+    var y2 = Math.min(canvas.height * scaleFactor, Math.max(1, bounds.top + bounds.height) * scaleFactor);
     croppedCanvas.width = bounds.width;
     croppedCanvas.height =  bounds.height;
     var width = x2-x1;
