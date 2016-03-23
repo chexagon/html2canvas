@@ -44,7 +44,7 @@ function SVGNodeContainer(node, _native, options) {
               }
       			});
         }else{
-          self.image.src = "data:image/svg+xml;base64," + btoa((new XMLSerializer()).serializeToString(node));
+          self.image.src = "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent((new XMLSerializer()).serializeToString(node))));
           if (self.image.complete === true) {
             resolve(self.image);
           }
