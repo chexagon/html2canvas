@@ -1,5 +1,5 @@
 /*
-  html2canvas 0.5.0-beta4 <http://html2canvas.hertzen.com>
+  html2canvas 0.5.0-chui-1 <http://html2canvas.hertzen.com>
   Copyright (c) 2016 Niklas von Hertzen
 
   Released under  License
@@ -6938,9 +6938,9 @@ function html2canvas(nodeList, options) {
         log.options.start = Date.now();
     }
 
-    if (!options.scale) options.scale = window.devicePixelratio;
-		if (options.width) options.width *= options.scale;
-		if (options.height) options.height *= options.scale;
+    if (!options.scale) { options.scale = window.devicePixelratio; }
+		if (options.width) { options.width *= options.scale; }
+		if (options.height) { options.height *= options.scale; }
 
     options.async = typeof(options.async) === "undefined" ? true : options.async;
     options.allowTaint = typeof(options.allowTaint) === "undefined" ? false : options.allowTaint;
@@ -7328,7 +7328,7 @@ ImageLoader.prototype.loadImage = function(imageData) {
     } else if (imageData.method === "gradient") {
         return new WebkitGradientContainer(imageData);
     } else if (imageData.method === "svg") {
-        return new SVGNodeContainer(imageData.args[0], this.support.svg);
+        return new SVGNodeContainer(imageData.args[0], this.support.svg, this.options);
     } else if (imageData.method === "IFRAME") {
         return new FrameContainer(imageData.args[0], this.isSameOrigin(imageData.args[0].src), this.options);
     } else {
@@ -8622,7 +8622,7 @@ function isPseudoElement(container) {
 }
 
 function isTextNode(container) {
-    if (container.node && container.node.parentElement && container.node.parentElement.tagName === 'text') return false;
+    if (container.node && container.node.parentElement && container.node.parentElement.tagName === 'text') {return false;}
     return container.node.nodeType === Node.TEXT_NODE;
 }
 
@@ -9208,7 +9208,7 @@ Support.prototype.testCORS = function() {
 };
 
 Support.prototype.testSVG = function() {
-    var img = new Image();
+    /*var img = new Image();
     var canvas = document.createElement("canvas");
     var ctx =  canvas.getContext("2d");
     img.src = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'></svg>";
@@ -9218,7 +9218,7 @@ Support.prototype.testSVG = function() {
         canvas.toDataURL();
     } catch(e) {
         return false;
-    }
+    }*/
     return true;
 };
 
@@ -9287,6 +9287,8 @@ function SVGNodeContainer(node, _native, options) {
     this.src = node;
     this.image = null;
     var self = this;
+
+    console.log('NATIVE', _native);
 
     this.promise = _native ? new Promise(function(resolve, reject) {
         self.image = new Image();

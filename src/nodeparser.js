@@ -801,7 +801,7 @@ function isPseudoElement(container) {
 }
 
 function isTextNode(container) {
-    if (container.node && container.node.parentElement && container.node.parentElement.tagName === 'text') return false;
+    if (container.node && container.node.parentElement && container.node.parentElement.tagName === 'text') {return false;}
     return container.node.nodeType === Node.TEXT_NODE;
 }
 

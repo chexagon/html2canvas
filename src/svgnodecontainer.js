@@ -7,6 +7,8 @@ function SVGNodeContainer(node, _native, options) {
     this.image = null;
     var self = this;
 
+    console.log('NATIVE', _native);
+
     this.promise = _native ? new Promise(function(resolve, reject) {
         self.image = new Image();
         self.image.onload = resolve;

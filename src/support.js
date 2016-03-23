@@ -34,7 +34,7 @@ Support.prototype.testCORS = function() {
 };
 
 Support.prototype.testSVG = function() {
-    var img = new Image();
+    /*var img = new Image();
     var canvas = document.createElement("canvas");
     var ctx =  canvas.getContext("2d");
     img.src = "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg'></svg>";
@@ -44,7 +44,7 @@ Support.prototype.testSVG = function() {
         canvas.toDataURL();
     } catch(e) {
         return false;
-    }
+    }*/
     return true;
 };
 

@@ -78,7 +78,7 @@ ImageLoader.prototype.loadImage = function(imageData) {
     } else if (imageData.method === "gradient") {
         return new WebkitGradientContainer(imageData);
     } else if (imageData.method === "svg") {
-        return new SVGNodeContainer(imageData.args[0], this.support.svg);
+        return new SVGNodeContainer(imageData.args[0], this.support.svg, this.options);
     } else if (imageData.method === "IFRAME") {
         return new FrameContainer(imageData.args[0], this.isSameOrigin(imageData.args[0].src), this.options);
     } else {

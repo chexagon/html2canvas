@@ -20,9 +20,9 @@ function html2canvas(nodeList, options) {
         log.options.start = Date.now();
     }
 
-    if (!options.scale) options.scale = window.devicePixelratio;
-		if (options.width) options.width *= options.scale;
-		if (options.height) options.height *= options.scale;
+    if (!options.scale) { options.scale = window.devicePixelratio; }
+		if (options.width) { options.width *= options.scale; }
+		if (options.height) { options.height *= options.scale; }
 
     options.async = typeof(options.async) === "undefined" ? true : options.async;
     options.allowTaint = typeof(options.allowTaint) === "undefined" ? false : options.allowTaint;
