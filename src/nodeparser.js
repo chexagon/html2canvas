@@ -438,7 +438,7 @@ NodeParser.prototype.paintFormValue = function(container) {
 };
 
 NodeParser.prototype.paintText = function(container) {
-    container.applyTextTransform();
+    container.applyTextTransform && container.applyTextTransform();
     var characters = punycode.ucs2.decode(container.node.data);
     var textList = (!this.options.letterRendering || noLetterSpacing(container)) && !hasUnicode(container.node.data) ? getWords(characters) : characters.map(function(character) {
         return punycode.ucs2.encode([character]);

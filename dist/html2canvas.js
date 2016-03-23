@@ -8259,7 +8259,7 @@ NodeParser.prototype.paintFormValue = function(container) {
 };
 
 NodeParser.prototype.paintText = function(container) {
-    container.applyTextTransform();
+    container.applyTextTransform && container.applyTextTransform();
     var characters = punycode.ucs2.decode(container.node.data);
     var textList = (!this.options.letterRendering || noLetterSpacing(container)) && !hasUnicode(container.node.data) ? getWords(characters) : characters.map(function(character) {
         return punycode.ucs2.encode([character]);
@@ -9287,8 +9287,6 @@ function SVGNodeContainer(node, _native, options) {
     this.src = node;
     this.image = null;
     var self = this;
-
-    console.log('NATIVE', _native);
 
     this.promise = _native ? new Promise(function(resolve, reject) {
         self.image = new Image();
