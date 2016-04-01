@@ -1,6 +1,6 @@
 var ProxyURL = require('./proxy').ProxyURL;
 
-function ProxyImageContainer(src, proxy) {
+function ProxyImageContainer(src, proxy, withCredentials) {
     var link = document.createElement("a");
     link.href = src;
     src = link.href;
@@ -8,7 +8,7 @@ function ProxyImageContainer(src, proxy) {
     this.image = new Image();
     var self = this;
     this.promise = new Promise(function(resolve, reject) {
-        self.image.crossOrigin = "Anonymous";
+        self.image.crossOrigin = !!withCredentials ? "use-credentials" : "anonymous";
         self.image.onload = resolve;
         self.image.onerror = reject;
 

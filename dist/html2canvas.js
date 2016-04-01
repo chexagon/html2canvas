@@ -6949,6 +6949,7 @@ function html2canvas(nodeList, options) {
     options.imageTimeout = typeof(options.imageTimeout) === "undefined" ? 10000 : options.imageTimeout;
     options.renderer = typeof(options.renderer) === "function" ? options.renderer : CanvasRenderer;
     options.strict = !!options.strict;
+    options.proxyWithCredentials = !!options.proxyWithCredentials;
 
     if (typeof(nodeList) === "string") {
         if (typeof(options.proxy) !== "string") {
@@ -7319,7 +7320,7 @@ ImageLoader.prototype.loadImage = function(imageData) {
         } else if (this.support.cors && !this.options.allowTaint && this.options.useCORS) {
             return new ImageContainer(src, true);
         } else if (this.options.proxy) {
-            return new ProxyImageContainer(src, this.options.proxy);
+            return new ProxyImageContainer(src, this.options.proxy, this.options.proxyWithCredentials);
         } else {
             return new DummyImageContainer(src);
         }
@@ -8797,7 +8798,7 @@ exports.loadUrlDocument = loadUrlDocument;
 },{"./clone":9,"./log":20,"./utils":33,"./xhr":35}],24:[function(_dereq_,module,exports){
 var ProxyURL = _dereq_('./proxy').ProxyURL;
 
-function ProxyImageContainer(src, proxy) {
+function ProxyImageContainer(src, proxy, withCredentials) {
     var link = document.createElement("a");
     link.href = src;
     src = link.href;
@@ -8805,7 +8806,7 @@ function ProxyImageContainer(src, proxy) {
     this.image = new Image();
     var self = this;
     this.promise = new Promise(function(resolve, reject) {
-        self.image.crossOrigin = "Anonymous";
+        self.image.crossOrigin = !!withCredentials ? "use-credentials" : "anonymous";
         self.image.onload = resolve;
         self.image.onerror = reject;
 
