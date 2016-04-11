@@ -3,6 +3,7 @@ var decode64 = require('./utils').decode64;
 
 function SVGContainer(src) {
     this.src = src;
+    console.log('svg container src', src);
     this.image = null;
     var self = this;
 

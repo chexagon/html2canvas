@@ -3,6 +3,7 @@ var utils = require('./utils');
 var getBounds = utils.getBounds;
 var parseBackgrounds = utils.parseBackgrounds;
 var offsetBounds = utils.offsetBounds;
+bowser = require('bowser');
 
 function NodeContainer(node, parent) {
     this.node = node;
@@ -132,7 +133,7 @@ NodeContainer.prototype.cssList = function(property, index) {
     return value;
 };
 
-NodeContainer.prototype.parseBackgroundSize = function(bounds, image, index) {
+NodeContainer.prototype.parseBackgroundSize = function(bounds, image, index, options) {
     var size = this.cssList("backgroundSize", index);
     var width, height;
 
@@ -159,7 +160,9 @@ NodeContainer.prototype.parseBackgroundSize = function(bounds, image, index) {
         width = height / image.height * image.width;
     }
 
-    return {width: width, height: height};
+    var scale = bowser.msie ? options.scale : 1;
+
+    return {width: width/scale, height: height/scale};
 };
 
 NodeContainer.prototype.parseBackgroundPosition = function(bounds, image, index, backgroundSize) {

@@ -63,7 +63,7 @@ ImageLoader.prototype.loadImage = function(imageData) {
         if (this.isSVG(src) && !this.support.svg && !this.options.allowTaint) {
             return new SVGContainer(src);
         } else if (src.match(/data:image\/.*;base64,/i)) {
-            return new ImageContainer(src.replace(/url\(['"]{0,}|['"]{0,}\)$/ig, ''), false);
+            return new ImageContainer(src.replace(/url\(['"]{0,}|['"]{0,}\)$/ig, ''), false, this.options);
         } else if (this.isSameOrigin(src) || this.options.allowTaint === true || this.isSVG(src)) {
             return new ImageContainer(src, false);
         } else if (this.support.cors && !this.options.allowTaint && this.options.useCORS) {
@@ -125,6 +125,7 @@ ImageLoader.prototype.get = function(src) {
 
 ImageLoader.prototype.fetch = function(nodes) {
     this.images = nodes.reduce(bind(this.findBackgroundImage, this), this.findImages(nodes));
+    console.log('this.images', this.images);
     this.images.forEach(function(image, index) {
         image.promise.then(function() {
             log("Succesfully loaded image #"+ (index+1), image);

@@ -1,11 +1,15 @@
 var SVGContainer = require('./svgcontainer');
 var canvg = require('canvg-browser');
 var bowser = require('bowser');
+var chUtils = require('./chUtils');
 
 function SVGNodeContainer(node, _native, options) {
     this.src = node;
     this.image = null;
     var self = this;
+
+    chUtils.fonts2SVGStyle(node);
+    chUtils.svgEmbedCss(node);
 
     this.promise = _native ? new Promise(function(resolve, reject) {
         self.image = new Image();
@@ -15,8 +19,8 @@ function SVGNodeContainer(node, _native, options) {
         if (bowser.msie) {
             // add a canvas somewhere
             var canvas = document.createElement('canvas');
-            var svgW = parseInt(node.getBBox().width);
-            var svgH = parseInt(node.getBBox().height);
+            var svgW = parseInt(node.getBoundingClientRect().width);
+            var svgH = parseInt(node.getBoundingClientRect().height);
             canvas.style.position = 'absolute';
             canvas.style.top = '-3000px';
             canvas.width = svgW * options.scale;

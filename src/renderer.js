@@ -84,7 +84,7 @@ Renderer.prototype.renderBackgroundImage = function(container, bounds, borderDat
 };
 
 Renderer.prototype.renderBackgroundRepeating = function(container, bounds, imageContainer, index, borderData) {
-    var size = container.parseBackgroundSize(bounds, imageContainer.image, index);
+    var size = container.parseBackgroundSize(bounds, imageContainer.image, index, this.options);
     var position = container.parseBackgroundPosition(bounds, imageContainer.image, index, size);
     var repeat = container.parseBackgroundRepeat(index);
     switch (repeat) {
