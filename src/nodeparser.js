@@ -7,6 +7,7 @@ var FontMetrics = require('./fontmetrics');
 var Color = require('./color');
 var StackingContext = require('./stackingcontext');
 var utils = require('./utils');
+var _ = require('lodash');
 var bind = utils.bind;
 var getBounds = utils.getBounds;
 var parseBackgrounds = utils.parseBackgrounds;
@@ -264,7 +265,15 @@ NodeParser.prototype.getRangeBounds = function(node, offset, length) {
     var range = this.range || (this.range = node.ownerDocument.createRange());
     range.setStart(node, offset);
     range.setEnd(node, offset + length);
-    return range.getBoundingClientRect();
+    var rect = range.getBoundingClientRect();
+    return {
+      left: rect.left + document.body.scrollLeft,
+      right : rect.right + document.body.scrollLeft,
+      top: rect.top,
+      bottom: rect.bottom,
+      width: rect.width,
+      height: rect.height
+    }
 };
 
 function ClearTransform() {}

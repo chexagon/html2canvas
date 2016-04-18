@@ -50,8 +50,8 @@ exports.getBounds = function(node) {
         return {
             top: clientRect.top,
             bottom: clientRect.bottom || (clientRect.top + clientRect.height),
-            right: clientRect.left + width,
-            left: clientRect.left,
+            right: clientRect.left + width + document.body.scrollLeft,
+            left: clientRect.left + document.body.scrollLeft,
             width:  width,
             height: node.offsetHeight == null ? clientRect.height : node.offsetHeight
         };
