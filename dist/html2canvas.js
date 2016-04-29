@@ -1,5 +1,5 @@
 /*
-  html2canvas 0.5.0-chui-7 <http://html2canvas.hertzen.com>
+  html2canvas 0.5.0-chui-8 <http://html2canvas.hertzen.com>
   Copyright (c) 2016 Niklas von Hertzen
 
   Released under  License
@@ -19441,6 +19441,11 @@ function html2canvas(nodeList, options) {
     }
 
     if (!options.scale) { options.scale = window.devicePixelratio; }
+    if (!options.padding) {
+      options.padding = {left: 0, right: 0, top: 0, bottom: 0};
+    } else if (typeof options.padding == 'Number') {
+      options.padding = {left: options.padding, right: options.padding, top: options.padding, bottom: options.padding};
+    }
 		if (options.width) { options.width *= options.scale; }
 		if (options.height) { options.height *= options.scale; }
 
@@ -19508,6 +19513,7 @@ function renderDocument(document, options, windowWidth, windowHeight, html2canva
 }
 
 function renderWindow(node, container, options, windowWidth, windowHeight) {
+
     var clonedWindow = container.contentWindow;
     var support = new Support(clonedWindow.document);
     var imageLoader = new ImageLoader(options, support);
@@ -19516,21 +19522,48 @@ function renderWindow(node, container, options, windowWidth, windowHeight) {
     var height = options.type === "view" ? windowHeight : documentHeight(clonedWindow.document);
     var renderer = new options.renderer(width*options.scale, height*options.scale, imageLoader, options, document);
     var parser = new NodeParser(node, renderer, support, imageLoader, options);
-    return parser.ready.then(function() {
-        log("Finished rendering");
-        var canvas;
 
-        if (options.type === "view") {
-            canvas = crop(renderer.canvas, {width: renderer.canvas.width, height: renderer.canvas.height, top: 0, left: 0, x: 0, y: 0}, options.scale);
-        } else if (node === clonedWindow.document.body || node === clonedWindow.document.documentElement || options.canvas != null) {
-            canvas = renderer.canvas;
-        } else {
-            canvas = crop(renderer.canvas, {width:  options.width != null ? options.width : bounds.width, height: options.height != null ? options.height : bounds.height, top: bounds.top, left: bounds.left, x: 0, y: 0}, options.scale);
-        }
+    var result = new Promise(function (resolve, reject) {
+      parser.ready.then(function() {
+          log("Finished rendering");
+          var canvas;
+          if (options.type === "view") {
+              canvas = crop(renderer.canvas, {width: renderer.canvas.width, height: renderer.canvas.height, top: 0, left: 0, x: 0, y: 0}, options);
+          } else if (node === clonedWindow.document.body || node === clonedWindow.document.documentElement || options.canvas != null) {
+              canvas = renderer.canvas;
+          } else {
+              canvas = crop(renderer.canvas, {width:  options.width != null ? options.width : bounds.width, height: options.height != null ? options.height : bounds.height, top: bounds.top, left: bounds.left, x: 0, y: 0}, options);
+          }
 
-        cleanupContainer(container, options);
-        return canvas;
+          if (options.caption) {
+            var captionDiv = document.createElement('div');
+            captionDiv.innerHTML = options.caption;
+            captionDiv.style.position = 'absolute';
+            captionDiv.style.left = 0;
+            captionDiv.style.top = document.body.scrollTop + 'px';
+            captionDiv.style.zIndex = '1000001';
+            captionDiv.style.width = (options.width + options.padding.left + options.padding.right)+'px';
+            clonedWindow.document.body.appendChild(captionDiv);
+
+            var captionParser = new NodeParser(captionDiv, renderer, support, imageLoader, options);
+            captionParser.ready.then(function () {
+              var ctx = canvas.getContext("2d");
+              var capWidth = captionDiv.offsetWidth * options.scale;
+              var capHeight = captionDiv.offsetHeight * options.scale;
+              var capY = (options.height != null ? options.height : bounds.height) + (options.padding.top + options.padding.bottom)*options.scale - capHeight;
+              ctx.drawImage(renderer.canvas, 0, 0, capWidth, capHeight, 0, capY, capWidth, capHeight);
+              cleanupContainer(container, options);
+              resolve(canvas);
+            });
+          }else {
+            cleanupContainer(container, options);
+            resolve(canvas);
+          }
+      });
+    }).then(function (canvas) {
+      return canvas;
     });
+    return result;
 }
 
 function cleanupContainer(container, options) {
@@ -19540,19 +19573,26 @@ function cleanupContainer(container, options) {
     }
 }
 
-function crop(canvas, bounds, scaleFactor) {
+function crop(canvas, bounds, options) {
     var croppedCanvas = document.createElement("canvas");
-    var x1 = Math.min(canvas.width * scaleFactor - 1, Math.max(0, bounds.left) * scaleFactor );
-    var x2 = Math.min(canvas.width * scaleFactor, Math.max(1, bounds.left + bounds.width) * scaleFactor);
-    var y1 = Math.min(canvas.height * scaleFactor - 1, Math.max(0, bounds.top) * scaleFactor);
-    var y2 = Math.min(canvas.height * scaleFactor, Math.max(1, bounds.top + bounds.height) * scaleFactor);
-    croppedCanvas.width = bounds.width;
-    croppedCanvas.height =  bounds.height;
+    var x1 = Math.min(canvas.width * options.scale - 1, Math.max(0, bounds.left) * options.scale );
+    var x2 = Math.min(canvas.width * options.scale, Math.max(1, bounds.left + bounds.width) * options.scale);
+    var y1 = Math.min(canvas.height * options.scale - 1, Math.max(0, bounds.top) * options.scale);
+    var y2 = Math.min(canvas.height * options.scale, Math.max(1, bounds.top + bounds.height) * options.scale);
+    croppedCanvas.width = bounds.width + (options.padding.left + options.padding.right) * options.scale;
+    croppedCanvas.height =  bounds.height + (options.padding.top + options.padding.bottom) * options.scale;
     var width = x2-x1;
     var height = y2-y1;
     log("Cropping canvas at:", "left:", bounds.left, "top:", bounds.top, "width:", width, "height:", height);
     log("Resulting crop with width", bounds.width, "and height", bounds.height, "with x", x1, "and y", y1);
-    croppedCanvas.getContext("2d").drawImage(canvas, x1, y1, width, height, bounds.x, bounds.y, width, height);
+    var ctx = croppedCanvas.getContext("2d");
+    if (options.background) {
+      ctx.beginPath();
+      ctx.rect(0, 0, croppedCanvas.width, croppedCanvas.height);
+      ctx.fillStyle = options.background;
+      ctx.fill();
+    }
+    ctx.drawImage(canvas, x1, y1, width, height, bounds.x + options.padding.left*options.scale, bounds.y + options.padding.top*options.scale, width, height);
     return croppedCanvas;
 }
 
