@@ -122,7 +122,8 @@ function renderWindow(node, container, options, windowWidth, windowHeight) {
             captionDiv.style.left = 0;
             captionDiv.style.top = document.body.scrollTop + 'px';
             captionDiv.style.zIndex = '1000001';
-            captionDiv.style.width = (options.width + options.padding.left + options.padding.right)+'px';
+            captionDiv.style.width = (options.width/options.scale + options.padding.left + options.padding.right)+'px';
+            captionDiv.style.maxWidth = captionDiv.style.width;
             clonedWindow.document.body.appendChild(captionDiv);
 
             var captionParser = new NodeParser(captionDiv, renderer, support, imageLoader, options);
