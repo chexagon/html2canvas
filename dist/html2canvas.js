@@ -19527,6 +19527,7 @@ function renderWindow(node, container, options, windowWidth, windowHeight) {
       parser.ready.then(function() {
           log("Finished rendering");
           var canvas;
+
           if (options.type === "view") {
               canvas = crop(renderer.canvas, {width: renderer.canvas.width, height: renderer.canvas.height, top: 0, left: 0, x: 0, y: 0}, options);
           } else if (node === clonedWindow.document.body || node === clonedWindow.document.documentElement || options.canvas != null) {
@@ -19580,12 +19581,16 @@ function crop(canvas, bounds, options) {
     var x2 = Math.min(canvas.width * options.scale, Math.max(1, bounds.left + bounds.width) * options.scale);
     var y1 = Math.min(canvas.height * options.scale - 1, Math.max(0, bounds.top) * options.scale);
     var y2 = Math.min(canvas.height * options.scale, Math.max(1, bounds.top + bounds.height) * options.scale);
+
     croppedCanvas.width = bounds.width + (options.padding.left + options.padding.right) * options.scale;
     croppedCanvas.height =  bounds.height + (options.padding.top + options.padding.bottom) * options.scale;
-    var width = x2-x1;
-    var height = y2-y1;
+
+    var width = (x2-x1) / options.scale;
+    var height = (y2-y1) / options.scale;
+
     log("Cropping canvas at:", "left:", bounds.left, "top:", bounds.top, "width:", width, "height:", height);
     log("Resulting crop with width", bounds.width, "and height", bounds.height, "with x", x1, "and y", y1);
+
     var ctx = croppedCanvas.getContext("2d");
     if (options.background) {
       ctx.beginPath();
@@ -22023,7 +22028,8 @@ exports.getBounds = function(node) {
     if (node.getBoundingClientRect) {
         var clientRect = node.getBoundingClientRect();
         var width = node.offsetWidth == null ? clientRect.width : node.offsetWidth;
-        return {
+
+        var res = {
             top: clientRect.top,
             bottom: clientRect.bottom || (clientRect.top + clientRect.height),
             right: clientRect.left + width + document.body.scrollLeft,
@@ -22031,13 +22037,14 @@ exports.getBounds = function(node) {
             width:  width,
             height: node.offsetHeight == null ? clientRect.height : node.offsetHeight
         };
+        //console.log('bounds', res, node);
+        return res;
     }
     return {};
 };
 
 exports.offsetBounds = function(node) {
     var parent = node.offsetParent ? exports.offsetBounds(node.offsetParent) : {top: 0, left: 0};
-
     return {
         top: node.offsetTop + parent.top,
         bottom: node.offsetTop + node.offsetHeight + parent.top,

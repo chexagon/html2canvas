@@ -47,7 +47,8 @@ exports.getBounds = function(node) {
     if (node.getBoundingClientRect) {
         var clientRect = node.getBoundingClientRect();
         var width = node.offsetWidth == null ? clientRect.width : node.offsetWidth;
-        return {
+
+        var res = {
             top: clientRect.top,
             bottom: clientRect.bottom || (clientRect.top + clientRect.height),
             right: clientRect.left + width + document.body.scrollLeft,
@@ -55,13 +56,14 @@ exports.getBounds = function(node) {
             width:  width,
             height: node.offsetHeight == null ? clientRect.height : node.offsetHeight
         };
+        //console.log('bounds', res, node);
+        return res;
     }
     return {};
 };
 
 exports.offsetBounds = function(node) {
     var parent = node.offsetParent ? exports.offsetBounds(node.offsetParent) : {top: 0, left: 0};
-
     return {
         top: node.offsetTop + parent.top,
         bottom: node.offsetTop + node.offsetHeight + parent.top,
