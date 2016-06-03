@@ -123,7 +123,6 @@ function renderWindow(node, container, options, windowWidth, windowHeight) {
             captionDiv.style.left = 0;
             var scrollTop = document.documentElement && typeof(document.documentElement.scrollTop) != 'undefined' ? document.documentElement.scrollTop : document.body.scrollTop;
             captionDiv.style.top = scrollTop + 'px';
-            console.log('captionDiv top', captionDiv.style.top);
             captionDiv.style.zIndex = '1000001';
             captionDiv.style.width = (options.width/options.scale + options.padding.left + options.padding.right)+'px';
             captionDiv.style.maxWidth = captionDiv.style.width;

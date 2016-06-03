@@ -1,5 +1,5 @@
 /*
-  html2canvas 0.5.0-chui-11 <http://html2canvas.hertzen.com>
+  html2canvas 0.5.0-chui-13 <http://html2canvas.hertzen.com>
   Copyright (c) 2016 Niklas von Hertzen
 
   Released under  License
@@ -19543,7 +19543,6 @@ function renderWindow(node, container, options, windowWidth, windowHeight) {
             captionDiv.style.left = 0;
             var scrollTop = document.documentElement && typeof(document.documentElement.scrollTop) != 'undefined' ? document.documentElement.scrollTop : document.body.scrollTop;
             captionDiv.style.top = scrollTop + 'px';
-            console.log('captionDiv top', captionDiv.style.top);
             captionDiv.style.zIndex = '1000001';
             captionDiv.style.width = (options.width/options.scale + options.padding.left + options.padding.right)+'px';
             captionDiv.style.maxWidth = captionDiv.style.width;
