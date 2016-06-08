@@ -19528,6 +19528,21 @@ function renderWindow(node, container, options, windowWidth, windowHeight) {
           log("Finished rendering");
           var canvas;
 
+          // find out canvas height first
+          options.captionHeight = 0;
+          if (options.caption) {
+            var capDiv = document.createElement('div');
+            capDiv.style.width = (options.width/options.scale + options.padding.left + options.padding.right)+'px';
+            capDiv.style.position = 'absolute';
+            capDiv.style.left = 0;
+            capDiv.style.top = '-1000px';
+            capDiv.style.maxWidth = capDiv.style.width;
+            capDiv.innerHTML = options.caption;
+            document.body.appendChild(capDiv);
+            options.captionHeight = capDiv.offsetHeight;
+            document.body.removeChild(capDiv);
+          }
+
           if (options.type === "view") {
               canvas = crop(renderer.canvas, {width: renderer.canvas.width, height: renderer.canvas.height, top: 0, left: 0, x: 0, y: 0}, options);
           } else if (node === clonedWindow.document.body || node === clonedWindow.document.documentElement || options.canvas != null) {
@@ -19541,7 +19556,10 @@ function renderWindow(node, container, options, windowWidth, windowHeight) {
             captionDiv.innerHTML = options.caption;
             captionDiv.style.position = 'absolute';
             captionDiv.style.left = 0;
-            var scrollTop = document.documentElement && typeof(document.documentElement.scrollTop) != 'undefined' ? document.documentElement.scrollTop : document.body.scrollTop;
+            var docElSTop = (document.documentElement && typeof(document.documentElement.scrollTop) != 'undefined') ? document.documentElement.scrollTop : 0;
+            var bodySTop = document.body.scrollTop;
+            var scrollTop = Math.max(docElSTop, bodySTop);
+            console.log('scrollTop', scrollTop);
             captionDiv.style.top = scrollTop + 'px';
             captionDiv.style.zIndex = '1000001';
             captionDiv.style.width = (options.width/options.scale + options.padding.left + options.padding.right)+'px';
@@ -19553,7 +19571,9 @@ function renderWindow(node, container, options, windowWidth, windowHeight) {
               var ctx = canvas.getContext("2d");
               var capWidth = captionDiv.offsetWidth * options.scale;
               var capHeight = captionDiv.offsetHeight * options.scale;
-              var capY = (options.height != null ? options.height : bounds.height) + (options.padding.top + options.padding.bottom)*options.scale - capHeight;
+              // resize canvas
+              //canvas.height = canvas.height + capHeight;
+              var capY = (options.height != null ? options.height : bounds.height) + (options.padding.top + options.padding.bottom)*options.scale;
               ctx.drawImage(renderer.canvas, 0, 0, capWidth, capHeight, 0, capY, capWidth, capHeight);
               cleanupContainer(container, options);
               resolve(canvas);
@@ -19584,7 +19604,7 @@ function crop(canvas, bounds, options) {
     var y2 = Math.min(canvas.height * options.scale, Math.max(1, bounds.top + bounds.height) * options.scale);
 
     croppedCanvas.width = bounds.width + (options.padding.left + options.padding.right) * options.scale;
-    croppedCanvas.height =  bounds.height + (options.padding.top + options.padding.bottom) * options.scale;
+    croppedCanvas.height =  bounds.height + (options.padding.top + options.padding.bottom + options.captionHeight) * options.scale;
 
     var width = (x2-x1) / options.scale;
     var height = (y2-y1) / options.scale;
