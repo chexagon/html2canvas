@@ -1,5 +1,5 @@
 /*
-  html2canvas 0.5.0-chui-13 <http://html2canvas.hertzen.com>
+  html2canvas 0.5.0-chui-14 <http://html2canvas.hertzen.com>
   Copyright (c) 2016 Niklas von Hertzen
 
   Released under  License
@@ -19520,7 +19520,9 @@ function renderWindow(node, container, options, windowWidth, windowHeight) {
     var bounds = getBounds(node);
     var width = options.type === "view" ? windowWidth : documentWidth(clonedWindow.document);
     var height = options.type === "view" ? windowHeight : documentHeight(clonedWindow.document);
-    var renderer = new options.renderer(width*options.scale, height*options.scale, imageLoader, options, document);
+    var padH = options.padding.left + options.padding.right;
+    var padV = options.padding.top + options.padding.bottom;
+    var renderer = new options.renderer((width + padH)*options.scale, (height + padV)*options.scale, imageLoader, options, document);
     var parser = new NodeParser(node, renderer, support, imageLoader, options);
 
     var result = new Promise(function (resolve, reject) {
@@ -19536,7 +19538,6 @@ function renderWindow(node, container, options, windowWidth, windowHeight) {
             capDiv.style.position = 'absolute';
             capDiv.style.left = 0;
             capDiv.style.top = '-1000px';
-            capDiv.style.maxWidth = capDiv.style.width;
             capDiv.innerHTML = options.caption;
             document.body.appendChild(capDiv);
             options.captionHeight = capDiv.offsetHeight;
@@ -19559,11 +19560,10 @@ function renderWindow(node, container, options, windowWidth, windowHeight) {
             var docElSTop = (document.documentElement && typeof(document.documentElement.scrollTop) != 'undefined') ? document.documentElement.scrollTop : 0;
             var bodySTop = document.body.scrollTop;
             var scrollTop = Math.max(docElSTop, bodySTop);
-            console.log('scrollTop', scrollTop);
             captionDiv.style.top = scrollTop + 'px';
             captionDiv.style.zIndex = '1000001';
             captionDiv.style.width = (options.width/options.scale + options.padding.left + options.padding.right)+'px';
-            captionDiv.style.maxWidth = captionDiv.style.width;
+            //captionDiv.style.maxWidth = captionDiv.style.width;
             clonedWindow.document.body.appendChild(captionDiv);
 
             var captionParser = new NodeParser(captionDiv, renderer, support, imageLoader, options);
