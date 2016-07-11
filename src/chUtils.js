@@ -72,7 +72,7 @@ function fonts2SVGStyle(svgNode) {
     var sheet = document.styleSheets[i];
     for (var r=0; r<sheet.cssRules.length; r++) {
       var rule = sheet.cssRules[r];
-      if (rule instanceof CSSFontFaceRule) {
+      if (rule instanceof CSSFontFaceRule && rule.style.fontFamily != '"FontAwesome"') {
         fontFaces += rule.cssText;
       }
     }

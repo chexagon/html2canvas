@@ -1,5 +1,5 @@
 /*
-  html2canvas 0.5.0-chui-14 <http://html2canvas.hertzen.com>
+  html2canvas 0.5.0-chui-15 <http://html2canvas.hertzen.com>
   Copyright (c) 2016 Niklas von Hertzen
 
   Released under  License
@@ -18965,7 +18965,8 @@ function fonts2SVGStyle(svgNode) {
     var sheet = document.styleSheets[i];
     for (var r=0; r<sheet.cssRules.length; r++) {
       var rule = sheet.cssRules[r];
-      if (rule instanceof CSSFontFaceRule) {
+      if (rule instanceof CSSFontFaceRule && rule.style.fontFamily != '"FontAwesome"') {
+        console.log('rule.style.fontFamily', rule.style.fontFamily);
         fontFaces += rule.cssText;
       }
     }

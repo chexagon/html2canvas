@@ -1,5 +1,5 @@
 /*
-  html2canvas 0.5.0-chui-14 <http://html2canvas.hertzen.com>
+  html2canvas 0.5.0-chui-15 <http://html2canvas.hertzen.com>
   Copyright (c) 2016 Niklas von Hertzen
 
   Released under  License
